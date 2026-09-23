@@ -1,0 +1,10 @@
+#!/bin/sh
+# Hippo remote guard. A brain never has a remote configured. If one has been added, refuse
+# every commit until it is removed, so a remote and content can never coexist.
+# Installed by INSTALL.md's guards step; lint checks it is present.
+remotes=$(git remote | xargs)
+if [ -n "$remotes" ]; then
+  echo "pre-commit: this brain has a remote configured ($remotes). Brains never have remotes." >&2
+  echo "Remove it (git remote remove <name>) and commit again." >&2
+  exit 1
+fi

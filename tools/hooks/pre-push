@@ -1,0 +1,6 @@
+#!/bin/sh
+# Hippo push guard. A brain is never pushed anywhere — not to a remote, not to a URL,
+# not to a local bare repo. Installed by INSTALL.md's guards step; lint checks it is present.
+echo "pre-push: this is a brain. Brains are never pushed." >&2
+echo "If this repo is a kit and not a brain, you are in the wrong directory." >&2
+exit 1

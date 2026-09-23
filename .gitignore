@@ -1,0 +1,7 @@
+# Raw pre-redaction staging — never version-controlled (DESIGN.md, “The redactor”)
+capture/
+
+.DS_Store
+
+# Sweep bookkeeping holds watched-folder filenames — metadata stays out of history
+.dream-state.json
