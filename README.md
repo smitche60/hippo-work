@@ -19,7 +19,7 @@ This is the **work** variant of Hippo. It holds customers, projects, people, dec
 events, and topics and only ingests what you explicitly tell it to file.
 
 This repo is the **skeleton**: the rules, the design reasoning, the linter, the skills, and
-empty directories. It holds no content and never will.
+empty directories.
 
 Credit: the conventions are adapted from Garry Tan's GBrain (two-layer pages, a resolver
 you read before you write, brain-first lookup, date-hash capture ids, a dream). `DESIGN.md`
