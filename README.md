@@ -11,6 +11,8 @@ events, and topics; keeps your personal life and HR matters about named people o
 ingests nothing you did not explicitly file. The personal variant is at
 [github.com/smitche60/hippo](https://github.com/smitche60/hippo).
 
+![Pipeline: capture, redactor, resolver, then one directory per type and the board; the dream acts on the whole column](docs/pipeline.png)
+
 This repo is the **skeleton**: the rules, the design reasoning, the linter, the skills, and
 empty directories. It holds no content and never will.
 
@@ -19,6 +21,13 @@ you read before you write, brain-first lookup, date-hash capture ids, a dream. W
 kept, dropped, and added — and why — is in `DESIGN.md`, along with Hippo's own additions:
 decisions as first-class pages, the redactor, the ontology as one file, and — in this
 variant — explicit-only intake.
+
+## What a page looks like
+
+![An example customer page: frontmatter, a summary, State and Open Threads above the separator, an append-only stamped timeline below](docs/example-page.png)
+
+The account, the people, and the dates are invented. Everything else is exactly what the
+resolver writes.
 
 ## Rule zero
 
