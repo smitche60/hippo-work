@@ -16,9 +16,7 @@ A linter keeps every page in the same shape.
 ![Pipeline: capture, redactor, resolver, then one directory per type and the board; the dream acts on the whole column](docs/pipeline.png)
 
 This is the **work** variant of Hippo. It holds customers, projects, people, decisions,
-events, and topics; keeps your personal life and HR matters about named people out by rule; and
-ingests nothing you did not explicitly file. The personal variant is at
-[github.com/smitche60/hippo](https://github.com/smitche60/hippo).
+events, and topics and only ingests what you explicitly tell it to file.
 
 This repo is the **skeleton**: the rules, the design reasoning, the linter, the skills, and
 empty directories. It holds no content and never will.
@@ -36,26 +34,23 @@ variant, explicit-only intake.
 The account, the people, and the dates are invented. Everything else is exactly what the
 resolver writes.
 
-## Rule zero
+## How to install
 
-This repo never holds a page about anyone. Your brain is a **separate** clone with **no
-remote**. If you push a brain with content in it, every fact in it is on the internet, and
-git history keeps what you delete. The install puts four guards on it (no remote, a lint
-check, and two git hooks) and makes the assistant prove both hooks work; a fifth forbids
-the assistant from ever pushing, whoever asks. `DESIGN.md`, "This kit never holds content"
-and "Five push guards."
+Give your assistant the prompt in `INSTALL.md`, and it sets up your brain with you:
 
-## Starting one
+1. It copies this kit into a folder on your machine, with no history and no connection to
+   GitHub.
+2. It reads the rules.
+3. It asks you about yourself and fills in your page.
+4. It walks you through the page types (customers, projects, and so on) so you can change them.
+5. It installs the three skills and runs the linter.
 
-Hand your assistant the prompt in `INSTALL.md`. It clones this skeleton into your folder
-with no history and no remote, reads the rules, fills in your page with you, walks you
-through the types, installs the three skills, and lints. Scheduling the dream is optional;
-the default is to run it by hand. If
-you'd rather do it by hand, the prompt is also the checklist.
+The dream runs when you ask for it, unless you choose to schedule it. If you'd rather set
+things up yourself, the prompt doubles as a checklist.
 
-The rules say "the owner" throughout. That's you. They are the rules the author's own brain
-runs on. `AGENTS.md`'s "Asking the owner" section in particular is how the
-author wants to be asked questions; keep it or rewrite it, but keep the idea.
+The rules call you "the owner." They're the same rules the author's own brain runs on,
+including how the assistant asks you questions (`AGENTS.md`, "Asking the owner"). Keep that
+section or rewrite it to suit you.
 
 ## What's here
 
