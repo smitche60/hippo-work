@@ -217,7 +217,7 @@ unchanged files are skipped.
   imitation in your name is worse than none. Only text you actually wrote enters it.
 - **Local git, no remote.** Your brain stays on your machine. Runs need it open; a
   scheduled one skips silently otherwise, and skipped work is deferred, not lost.
-- **Five push guards, not one.** "Never push" is a rule you have to remember at the wrong
+- **Five push guards.** "Never push" is a rule you have to remember at the wrong
   moment — months in, when "I should back this up" feels like prudence. So the kit stacks
   guards that each catch what the others miss: no remote at install (a plain `git push`
   fails on its own); lint fails a repo that holds pages and has a remote (catches a remote
