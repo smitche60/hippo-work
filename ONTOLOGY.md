@@ -72,8 +72,9 @@ item must start `` - `name/` `` (backticked directory name with trailing slash).
 directory holding pages that appears in neither section is a lint error.
 
 - `capture/` — pre-redaction landing pad, gitignored
+- `drafts/` — what the work run made and the owner has not yet ruled on, gitignored
 - `reports/` — dream reports, research digests, audits
-- `docs/` — your own notes about the system, if you keep any
+- `docs/` — your own documents and notes, and the drafts you chose to keep
 - `tools/` — lint and any other scripts
 - `skills/` — the assistant's skills, when a kit ships them
 

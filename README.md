@@ -11,6 +11,12 @@ Each page has a current summary at the top and a dated log below it.
    everything you've filed, rewrites the affected summaries to match, and flags anything that
    contradicts what a page already said.
 
+4. Hippo asks. Where two pages disagree, or one leans on a guess, it asks you and then
+   corrects every place at once.
+5. Hippo briefs and drafts. A morning brief tells you what matters today. A work run offers
+   to take pieces of work off your plate, and makes nothing until you have agreed what it
+   will make.
+
 A linter keeps every page in the same shape.
 
 ![Pipeline: capture, redactor, resolver, then one directory per type and the board; the dream acts on the whole column](docs/pipeline.png)
@@ -43,7 +49,8 @@ Give your assistant the prompt in `INSTALL.md`, and it sets up your brain with y
 2. It reads the rules.
 3. It asks you about yourself and fills in your page.
 4. It walks you through the page types (customers, projects, and so on) so you can change them.
-5. It installs the three skills and runs the linter.
+5. It asks which outside sources it may read (none by default).
+6. It installs the six skills and runs the linter.
 
 The dream runs when you ask for it, unless you choose to schedule it. If you'd rather set
 things up yourself, the prompt doubles as a checklist.
@@ -57,19 +64,23 @@ section or rewrite it to suit you.
 - `INSTALL.md`: the prompt that sets this up.
 - `AGENTS.md`: behaviour and operating rules. Start here. (`CLAUDE.md` is a pointer to
   it, for assistants that load that filename automatically.)
+- `BRIEF.md`, `WORK.md`: the morning brief; the work run and the review. Read before
+  each.
 - `RESOLVER.md`: routing and page anatomy; read before any write.
 - `ONTOLOGY.md`: the entity types, in precedence order. The customisation seam.
 - `REDACTOR.md`: what may never be stored, and what happens to it instead.
 - `CONTEXT.md`: the glossary.
-- `WATCHED.md`, `RESEARCH.md`, `TODO.md`: watched folders (empty by default), the research
-  queue, the board.
+- `WATCHED.md`, `SOURCES.md`: watched folders and outside sources, both empty by default.
+- `TODO.md`, `QUESTIONS.md`, `RESEARCH.md`: the board, the open questions, the research
+  queue.
 - `ME.md`, `VOICE.md`: the owner's page and voice profile, empty.
-- `tools/lint.py`: strict lint; the gate on dream commits and multi-page filings.
-- `skills/`: the three skills (file, dream, ask). (Shipped under `brain-*` names; the
+- `tools/lint.py`: strict lint; the gate on every commit that touches a page or the board.
+- `skills/`: the six skills (file, dream, ask, brief, work, review). (Shipped under `brain-*` names; the
   install renames them if those names are already taken on your account.)
 - `DESIGN.md`: what Hippo borrows from GBrain, leaves out, and adds, and the reasoning
   behind every choice you might want to change. Read it second.
-- `capture/` is deliberately absent; it's gitignored and gets created by the first filing.
+- `capture/` and `drafts/` are deliberately absent; both are gitignored and get created by
+  the first filing and the first work run.
 
 ## License
 

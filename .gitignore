@@ -1,6 +1,9 @@
 # Raw pre-redaction staging — never version-controlled (DESIGN.md, “The redactor”)
 capture/
 
+# Unreviewed work-run output — suggestions, not the owner's work (WORK.md)
+drafts/
+
 .DS_Store
 
 # Sweep bookkeeping holds watched-folder filenames — metadata stays out of history

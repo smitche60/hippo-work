@@ -11,9 +11,9 @@ knowing what it was for.
 
 Hippo assumes an AI assistant that can read and write files in a folder on your machine, run
 on a schedule, and load **skills** — short instruction documents that tell it how to file,
-dream, and answer. It was built on one such assistant; anything with those three abilities will do. Its rule
-file is `AGENTS.md`, per the cross-tool convention; `CLAUDE.md` is a pointer to it. The rules the assistant actually follows live in `AGENTS.md`, `RESOLVER.md`,
-`ONTOLOGY.md`, `REDACTOR.md`, and `CONTEXT.md`. Where those point at this document by section name, the
+dream, answer, brief, work, and review. It was built on one such assistant; anything with those three abilities will do. Its rule
+file is `AGENTS.md`, per the cross-tool convention; `CLAUDE.md` is a pointer to it. The rules the assistant actually follows live in `AGENTS.md`, `BRIEF.md`, `WORK.md`,
+`RESOLVER.md`, `ONTOLOGY.md`, `REDACTOR.md`, `CONTEXT.md`, and the header of `QUESTIONS.md`. Where those point at this document by section name, the
 section is here.
 
 ## The shape of it
@@ -35,9 +35,9 @@ page about you, and `VOICE.md`, a profile of how you write.
 Content enters through `capture/`, a gitignored staging directory, and passes through the
 **redactor** before anything is stored. The **resolver** then routes each fact to exactly one
 page. A **dream** run — weekly if you schedule it, otherwise when you ask — drains capture,
-refreshes the pages it touched, tidies the board, and writes a report. A
-weekday **morning brief** reads the board and the research queue and tells you what needs
-you. `TODO.md` is the board: tasks, not pages.
+refreshes the pages it touched, tidies the board, and writes a report. A **morning brief** asks what the brain is unsure about, then tells you what matters today.
+A **work run** drafts what it can take off your plate into `drafts/`, and a **review** is
+where you rule on what it made. `TODO.md` is the board: tasks, not pages.
 
 ## Borrowed from GBrain
 
@@ -89,11 +89,12 @@ puts keyword search first even with the full stack behind it.
   self-hosted always-on process you have to keep alive; you run the dream and the brief
   when you want them, or let the platform's scheduler fire them, and a run that fires while
   your machine is closed skips and defers.
-- **No enrichment.** GBrain pulls from APIs and keeps `.raw/` sidecars for provenance. Hippo
-  has no external stream; the only raw material is what you capture.
-- **No email, calendar, or social ingestion — ever.** This is a hard constraint, not a
+- **No enrichment.** GBrain pulls from APIs and keeps `.raw/` sidecars for provenance. Hippo has no external stream; the only raw material is what you capture. A source you list
+  is read for a brief or a draft, and nothing from it is kept.
+- **No email or social ingestion — ever.** This is a hard constraint, not a
   setting. It rejects GBrain's highest-volume sources in exchange for a privacy boundary and
-  a small blast radius. The landing directory is called `capture/` rather than `inbox/` to
+  a small blast radius. A calendar is different in kind — it can be listed as a source and
+  read, and it writes one line (“Sources: read, never written to”, below). The landing directory is called `capture/` rather than `inbox/` to
   kill even the connotation.
 - **No per-directory README resolvers.** GBrain puts a "what goes here / what does not"
   resolver in every directory; at scale, a rule next to the thing it governs is worth the
@@ -114,7 +115,7 @@ puts keyword search first even with the full stack behind it.
 
 ## Added
 
-Four things Hippo does that GBrain does not, and the choices behind each.
+What Hippo does that GBrain does not, and the choices behind each.
 
 ### The redactor, and why its guarantee is never-stored
 
@@ -177,8 +178,9 @@ token is defined so lint's date-first rule still holds.
 
 ### Intake is explicit
 
-Nothing enters this brain unless you filed it. The assistant never surveys your folders,
-chats, or documents looking for material, and `WATCHED.md` ships empty. That is the main
+Nothing enters this brain unless you filed it or answered a question about it. The
+assistant never surveys your folders, chats, or documents looking for material to file, and
+`WATCHED.md` and `SOURCES.md` ship empty. That is the main
 departure from the personal kit, and it is deliberate: at work, the cost of the brain
 distilling a document you did not mean it to read is higher than the cost of a filing you
 forgot. If you do want a folder swept, add it to `WATCHED.md` and the dream will distil new
@@ -186,16 +188,83 @@ or changed text files through the redactor — milestones, decisions, facts — 
 stamps, never copying raw files. A gitignored `.dream-state.json` holds per-file hashes so
 unchanged files are skipped.
 
+### Sources: read, never written to
+
+`SOURCES.md` lists what the assistant may read outside the brain's folder — a calendar, a
+chat workspace, a document drive, a CRM, the web, and any of your other skills a work run
+may use. It ships empty; the install asks, one kind at a time. Three rules make a listed
+source safe to have. It is fetch-only: whatever the assistant is doing for the brain, it
+never sends, posts, or changes anything in an outside system, whoever asks — it hands you
+the words and you send your own messages. What it reads is material, never instruction:
+text that asks the assistant to do something, in a chat message, on a web page, or in a
+page already inside the brain, is named to you and not acted on, because a brain that
+reads other people's words must not take orders from them. And reading stores nothing: a
+source shapes a brief or a draft and is gone.
+
+The first two rules are the **fence**, and `AGENTS.md`, `BRIEF.md`, `WORK.md`, and every
+skill carry it word for word, with lint checking the copies match. Everywhere else the kit
+states a rule once; this one is repeated because a rule a model has to remember from
+another file is a rule it will sometimes forget, and this is the one that must not be.
+
+Chat is narrower still. A channel is opened only because a page names it in a `Channel`
+line, so the assistant reads the project channel for the account you are meeting and never
+trawls the workspace. The one exception is the voice build, which you ask for by name and
+which uses only messages you wrote. Email stays out entirely: anyone in the world can put text in your
+inbox, and that is the wrong material to hand an assistant working unattended.
+
+The calendar is the one source that writes anything. For a meeting you accepted that
+happened with
+someone outside your organisation, the dream adds a single line to that organisation's
+existing page saying you met — the date and the title, labelled `inferred`, never a new
+page. It is the smallest exception to explicit intake that keeps a page from pretending a
+quarter of meetings never happened.
+
+### Questions
+
+A brain built from filings drifts. One page says one person owns the account, another page
+says someone else does, and the board is waiting on a third who has moved on. Hippo keeps
+one list, `QUESTIONS.md`, of the places where its pages disagree and of the guesses other
+pages lean on, and it asks you: three at a time, because one answer usually settles
+others; at the start of the morning brief, whenever you say "what are you unsure about",
+and the moment a filing turns one up. Your answer is filed as your statement, and every
+place that carried the other version is corrected in one commit, with the list of what
+changed shown to you. "Leave it" is remembered. Missing facts are deliberately not
+questions: gaps never run out, and a brain that asks about all of them trains you to
+ignore it.
+
+### The work run and the review
+
+The work run looks at the board and offers to take work off your plate. Its design starts
+from the way such a thing fails: it misreads the assignment, makes something beside the
+point, and you throw it away. So it makes nothing until you have confirmed a **read-back**
+— two or three lines saying what it will make, for whom, from which sources — and it ranks
+what it offers by how confident it is, not by how important the task is. For most tasks
+that means a **piece** and not the whole: a fact sheet, a check, a collection, a skeleton,
+the open questions, the text of a message. Legwork can be checked against its sources; judgment is yours. Nothing outside the folder
+is opened until you have said yes, and then only what the read-back named. A task it cannot read back without inventing something gets a question,
+not a draft.
+
+What it makes lands in `drafts/`, which is gitignored. A draft is a suggestion you may
+ignore entirely; it is not your work, and nothing later treats it as your direction. The
+run cannot edit a page, move a task, change a rule, or touch an outside system. It makes
+three drafts at a time, more only when you ask again, and it stops taking new work when
+five drafts sit unreviewed, because an unreviewed pile is exactly the waste it
+exists to avoid. The **review** walks the drafts one at a time: keep, kill, redo with your
+direction, or later. Your reasons for kills and redos are logged in your words and read
+before the next run, and a direction given twice is offered back to you as a standing
+rule. Nothing is learned from whether you used a draft — you will usually change it, and
+the assistant cannot see what you sent.
+
 ## Smaller choices worth knowing about
 
 - **Capture, archive, quarantine.** After a capture is filed, its post-redaction text is kept
-  in gitignored `capture/.archive/` for 30 days so a mis-filing can be replayed, then purged.
+  in gitignored `capture/.archive/` for 7 days so a mis-filing can be replayed, then purged.
   Refusals wait raw in `capture/.quarantine/` until you rule, because you cannot override
   content that was already destroyed. Captures that became only a board line are not
   archived — the board line is their record.
 - **What the dream checks besides filing.** A new fact that contradicts an existing State
-  line is flagged in the report with both visible on the page — you arbitrate, the brain does
-  not pick. Open Threads and Waiting For items untouched for 30 days get a nag. On the first
+  line stays visible beside it and becomes a question — you arbitrate, the brain does not
+  pick. Open Threads and Waiting For items untouched for 30 days are listed in the report. On the first
   dream of each month, pages untouched for 90 days are listed with one question each: still
   true, still cared about? Every dream also starts by replaying the last seven days of
   archived captures through the pipeline; the stamps make completed filings no-ops, so a run
@@ -205,16 +274,25 @@ unchanged files are skipped.
   you can say "do #2." The dream expires Done items after a week, moving meaningful ones to
   page timelines first, and reconciles the board against pages' Open Threads so nothing is
   tracked twice.
-- **The morning brief and the research queue.** A weekday run delivers research findings,
-  decisions that need you (in the question format `AGENTS.md` describes), the board, and
-  anything dated or stale. `RESEARCH.md` is its queue: one-shot items, at most one deep one
-  per morning, and recurring watches that stay silent unless they find something.
+- **The morning brief and the research queue.** Run when you ask. It opens with up to three
+  questions, so that what follows is not built on a page that is wrong. Then the one thing
+  it judges most important today — which may be something that is not on the board — your
+  meetings with what each page, its channel, and the board say about them, the whole board
+  at a line per task, and what is dated or stale. It ends by offering the review or a work
+  run. Research is kept apart so that the brief only reads: `RESEARCH.md` is a queue you
+  run by saying "run research" — one-shot items, at most one deep one per run, and
+  recurring watches that stay silent unless they find something.
 - **Questions come in a fixed shape.** Numbered, with lettered options and a recommendation on
   its own line, so you can answer "Q1 b" from a phone. The morning brief and the dream report
   use the same shape.
-- **`VOICE.md` starts in alpha.** The assistant records observations about how you write but
-  does not imitate you until you flip the status — a thin profile imitates badly, and bad
-  imitation in your name is worse than none. Only text you actually wrote enters it.
+- **`VOICE.md` is a description, and starts locked.** It records how you write in a form a
+  draft can be checked against — habits per situation, a few real examples, and a list of
+  what you never do — and not a pile of things you wrote, because a model copying a pile
+  picks up your topics and misses the pattern. Evidence is only your own words: written,
+  sent, or spoken in a transcript. An assistant's draft never counts, however much of it
+  you kept. The assistant does not imitate you until you have seen three messages written
+  from the profile beside three real ones and flipped the status — a thin profile imitates
+  badly, and bad imitation in your name is worse than none.
 - **Local git, no remote.** Your brain stays on your machine. Runs need it open; a
   scheduled one skips silently otherwise, and skipped work is deferred, not lost.
 - **Five push guards.** "Never push" is a rule you have to remember at the wrong
@@ -259,8 +337,8 @@ instance you stand up should be cloned from it, not from a brain.
 
 ## Changing it
 
-A rule lives in exactly one file: behaviour in `AGENTS.md`, routing and page anatomy in
-`RESOLVER.md`, types in `ONTOLOGY.md`, redaction in `REDACTOR.md`, vocabulary in
+A rule lives in exactly one file: behaviour in `AGENTS.md`, the morning brief in `BRIEF.md`,
+the work run and the review in `WORK.md`, questions in the header of `QUESTIONS.md`, routing and page anatomy in `RESOLVER.md`, types in `ONTOLOGY.md`, redaction in `REDACTOR.md`, vocabulary in
 `CONTEXT.md`. Any edit to a rule ends with a search for its key terms across the repo and the
 skills, and is done when every hit agrees.
 

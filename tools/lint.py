@@ -129,7 +129,7 @@ for p in pages:
     for i, l in enumerate(lines[:-1]):
         if l.startswith("## ") and (lines[i+1].startswith("## ") or lines[i+1] == "---"):
             errs.append(f"{p}: empty section '{l.strip()}' (omit empty sections)")
-    for link in re.findall(r"\[\[([^\]|]+)(?:\|[^\]]*)?\]\]", t):
+    for link in ([] if p == "VOICE.md" else re.findall(r"\[\[([^\]|]+)(?:\|[^\]]*)?\]\]", t)):   # VOICE.md quotes real messages
         tgt = link if link.endswith(".md") else link + ".md"
         if not os.path.exists(tgt): errs.append(f"{p}: dangling wikilink [[{link}]]")
     base = os.path.basename(p)
@@ -164,6 +164,59 @@ if is_brain:
                         f"INSTALL.md's guards step is gone. Owner: `cp tools/hooks/{hook} .git/hooks/ "
                         f"&& chmod +x .git/hooks/{hook}`. The assistant stops here and does not do this.")
 if tracked("capture/"): errs.append(f"capture/ files tracked by git: {tracked('capture/').splitlines()[:3]}")
+if tracked("drafts/"): errs.append(f"drafts/ files tracked by git (must be gitignored — unreviewed work-run output): {tracked('drafts/').splitlines()[:3]}")
+# drafts/ must be ignored, not merely untracked: an unignored folder is one `git add -A` from history
+if os.path.isdir(".git") and subprocess.run(["git", "check-ignore", "-q", "drafts/x.md"]).returncode != 0:
+    errs.append("drafts/ is not gitignored — add `drafts/` to .gitignore before the next commit")
+
+def lint_questions(p="QUESTIONS.md"):
+    """The header of QUESTIONS.md is the rule for the file; check it is whole and the ids are sane."""
+    if not os.path.exists(p):
+        if os.path.exists("WORK.md") or os.path.exists("BRIEF.md"):
+            errs.append(f"{p} missing — BRIEF.md and WORK.md depend on it; restore it from the kit")
+        return
+    lines = open(p).read().splitlines()
+    heads = [l.strip() for l in lines if l.startswith("## ")]
+    want = ["## What earns a question", "## Cross-checking", "## Writing an entry", "## Asking",
+            "## Applying an answer", "## Open", "## Settled"]
+    if heads != want:
+        errs.append(f"{p}: headings are {heads}; expected {want} — the header is the rule for the file, restore it from the kit")
+        return
+    nid = [m for m in (re.fullmatch(r"next-id:\s*(\d+)\s*", l) for l in lines) if m]
+    if len(nid) != 1:
+        errs.append(f"{p}: needs exactly one `next-id: <number>` line")
+        return
+    nxt = int(nid[0].group(1))
+    ids = [int(m.group(1)) for l in lines[lines.index("## Open"):] for m in [re.match(r"- \[Q(\d+)\]", l)] if m]
+    dup = sorted({i for i in ids if ids.count(i) > 1})
+    if dup: errs.append(f"{p}: ids used more than once: {dup}")
+    if ids and max(ids) >= nxt: errs.append(f"{p}: next-id {nxt} is not above the highest id in use ({max(ids)})")
+lint_questions()
+
+def fence_of(path):
+    """The fence block as one normalised line, or None."""
+    try: ls = open(path).read().splitlines()
+    except OSError: return None
+    out, on = [], False
+    for l in ls:
+        if l.startswith("> **The fence.**"): on = True
+        if on:
+            if l.startswith(">"): out.append(l[1:])
+            else: break
+    return " ".join(" ".join(out).split()) or None
+# The fence is the one rule stated in more than one file; every copy must match AGENTS.md's.
+if os.path.exists("WORK.md") or os.path.exists("BRIEF.md"):
+    ref = fence_of("AGENTS.md")
+    if ref is None:
+        errs.append("AGENTS.md has no fence block (`> **The fence.** …`) — restore it from the kit")
+    else:
+        carriers = [p for p in ("BRIEF.md", "WORK.md") if os.path.exists(p)]
+        if os.path.isdir("skills"):
+            carriers += sorted(os.path.join("skills", d, "SKILL.md") for d in os.listdir("skills")
+                               if os.path.isfile(os.path.join("skills", d, "SKILL.md")))
+        for p in carriers:
+            if fence_of(p) != ref:
+                errs.append(f"{p}: the fence block is missing or differs from AGENTS.md's — copy it across word for word")
 if tracked(".dream-state.json"): errs.append(".dream-state.json is tracked by git (must be gitignored)")
 if errs:
     print(f"LINT: {len(errs)} finding(s)")

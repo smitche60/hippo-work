@@ -3,7 +3,7 @@
 The sole stage that sees raw input. Stateless: each capture judged on its own text.
 Guarantee (DESIGN.md “The redactor”): stripped content is never stored — not in pages, git history, the
 archive, or reports. This table is the single source of the rules; loosening or tightening
-it is an edit here, nothing more.
+it is the owner's edit here, nothing more.
 
 ## Verbs
 
@@ -61,5 +61,5 @@ lifts only the flag: strip and abstract rows still apply on the re-run, so a fla
 that also held a credential or PII stores without them, and the guarantee at the top of this
 file holds whatever the owner rules. When the override stores a business confidence, the
 line it produces carries `[confidential]` after the date (RESOLVER.md, page anatomy), so
-every such line in the brain is one grep away and can be reviewed or removed as a set. Rising counts in one category mean this table is too conservative there;
-the fix is a one-line edit above.
+every such line in the brain is one grep away and can be reviewed or removed as a set. Rising counts in one category mean this table may be too conservative there:
+say so in the report, and the owner decides whether to edit the row above.
